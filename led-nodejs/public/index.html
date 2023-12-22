@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arduino LED Control</title>
+  <style>
+    button {
+      width: 100%;
+      height: 80px;
+      font-size: 20px;
+      border: none;
+      border-radius: 16px;
+      background-color: rgb(255, 159, 80);
+    }
+
+    button:hover {
+      background-color: rgb(255, 171, 102);
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Arduino LED Control</h1>
+
+  <button id="toggleButton">Toggle LED</button>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var toggleButton = document.getElementById('toggleButton');
+
+      toggleButton.addEventListener('click', function () {
+        var xhr = new XMLHttpRequest();
+        console.log('Button clicked');
+
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+              console.log(xhr.responseText);
+            } else {
+              console.error('Toggle failed:', xhr.status, xhr.statusText);
+            }
+          }
+        };
+
+        xhr.open('POST', '/toggle', true);
+        xhr.send();
+      });
+    });
+  </script>
+
+</body>
+
+</html>
