@@ -8,7 +8,6 @@ const port = 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-//app.use('/test-tree', express.static(path.join(__dirname, 'public')));
 
 // Use http module to send HTTP requests to Arduino
 const arduinoHost = '192.168.0.207'; // Change to the IP address of your Arduino if needed
