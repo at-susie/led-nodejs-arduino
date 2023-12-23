@@ -6,35 +6,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arduino LED Control</title>
   <style>
-    button {
+    body {
+      background-color: #120c07;
+    }
+
+    body * {
+      font-family: 'Nabla';
+      background-color: #120c07;
+    }
+
+    .wrapper {
+      display: flex;
       width: 100%;
+    }
+    button {
+      /* width: 100%; */
       height: 80px;
-      font-size: 20px;
+      flex-grow: 1;
       border: none;
       border-radius: 16px;
-      background-color: rgb(255, 159, 80);
+      border: solid 1px #b4a595;
+      background-color: #120c07;
+      margin-block-end: 8px;
+      font-size: 28px;
+      transition: ease 0.3s;
     }
 
     button:hover {
-      background-color: rgb(255, 171, 102);
+      background-color: #241910;
       cursor: pointer;
     }
+
+    button:last-child {
+      margin-left: 8px;
+    }
   </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nabla&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
   <h1>Arduino LED Control</h1>
 
-  <button id="toggleButton">Toggle LED</button>
+  <div class="wrapper">
+    <button id="turnOn">Turn on LED</button>
+    <button id="turnOff">Turn off LED</button>
+  </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      var toggleButton = document.getElementById('toggleButton');
+      var turnOn = document.getElementById('turnOn');
 
-      toggleButton.addEventListener('click', function () {
+      turnOn.addEventListener('click', function () {
         var xhr = new XMLHttpRequest();
-        console.log('Button clicked');
+        console.log('Turn On Button Clicked');
+
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+              console.log(xhr.responseText);
+            } else {
+              console.error('Toggle failed:', xhr.status, xhr.statusText);
+            }
+          }
+        };
+
+        xhr.open('POST', '/toggle', true);
+        xhr.send();
+      });
+
+      var turnOff = document.getElementById('turnOff');
+
+      turnOff.addEventListener('click', function () {
+        var xhr = new XMLHttpRequest();
+        console.log('Turn Off Button Clicked');
 
         xhr.onreadystatechange = function () {
           if (xhr.readyState === 4) {
