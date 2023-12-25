@@ -1,9 +1,8 @@
-
-
 #include <WiFiNINA.h>
+#include "arduino_secrets.h"
 
-const char* ssid = "Vodafone-9CEC";
-const char* password = "fraNMkfXAb6dR4Jq";
+const char* ssid = SECRET_SSID;
+const char* password = SECRET_PASS;
 
 WiFiServer server(80);
 int ledPin = 13;
@@ -27,7 +26,6 @@ void setup() {
   Serial.println("Server started");
 }
 
-
 void loop() {
   WiFiClient client = server.available();
 
@@ -37,39 +35,65 @@ void loop() {
 
     // Process HTTP request
     String currentLine = "";
+    bool headerComplete = false;
 
     while (client.connected()) {
+
+      // Check if the accumulated line contains "POST /toggle-on"
+      if (currentLine.startsWith("POST /toggle-on")) {
+        // Handle toggle-on request
+        toggleLED();
+        Serial.print("Received ON signal");
+      }
+      if (currentLine.startsWith("POST /toggle-off")) {
+        // Handle toggle-off request
+        digitalWrite(ledPin, LOW);
+        toggleLEDOff();
+        Serial.print("Received OFF signal");
+      }
+
       if (client.available()) {
         char c = client.read();
         Serial.write(c);
 
-        // Accumulate characters until a newline is received
-        if (c == '\n') {
-          // Check if the accumulated line contains "POST /toggle"
-          if (currentLine.startsWith("POST /toggle")) {
-            // Handle toggle request
-            toggleLED();
-          }
+        if (c == '\n' && currentLine.length() == 0) {
+          headerComplete = true;
+        } else if (c == '\n') {
+          headerComplete = false;
+
+          // // Check if the accumulated line contains "POST /toggle-on"
+          // if (currentLine.startsWith("POST /toggle-on")) {
+          //   // Handle toggle-on request
+          //   toggleLED();
+          //   Serial.println("Received ON signal");
+          // } else if (currentLine.startsWith("POST /toggle-off")) {
+          //   // Handle toggle-off request
+          //   digitalWrite(ledPin, LOW);
+          //   Serial.println("Received OFF signal");
+          // }
 
           // Reset the current line
           currentLine = "";
+        } else if (c != '\r') {
+          // Accumulate characters in the current line
+          currentLine += c;
+        }
 
+        if (headerComplete) {
           // Close the connection
           client.stop();
           Serial.println("Client disconnected");
-        } else {
-          // Accumulate characters in the current line
-          currentLine += c;
+          break;
         }
       }
     }
   }
 }
 
-
 void toggleLED() {
-  const int fadeDuration = 1000; // Duration of fade-in and fade-out in milliseconds
-  const int fadeSteps = 100;     // Number of steps for fading (adjust as needed)
+  Serial.print("Received ON signal");
+  const int fadeDuration = 1000;  // Duration of fade-in and fade-out in milliseconds
+  const int fadeSteps = 100;      // Number of steps for fading (adjust as needed)
 
   while (true) {
     // Fade in
@@ -95,5 +119,10 @@ void toggleLED() {
   }
 }
 
+void toggleLEDOff() {
+  while (true) {
+    digitalWrite(ledPin, LOW);
+  }
 
-
+  Serial.print("Received OFF signal");
+}

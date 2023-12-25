@@ -519,3 +519,4 @@ led-nodejs/node_modules/vary/package.json
 led-nodejs/node_modules/vary/README.md
 led-nodejs/package-lock.json
 package-lock.json
+led-arduino/arduino_secrets.h

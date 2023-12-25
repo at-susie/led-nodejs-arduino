@@ -19,6 +19,7 @@
       display: flex;
       width: 100%;
     }
+
     button {
       /* width: 100%; */
       height: 80px;
@@ -51,51 +52,41 @@
   <h1>Arduino LED Control</h1>
 
   <div class="wrapper">
-    <button id="turnOn">Turn on LED</button>
-    <button id="turnOff">Turn off LED</button>
+    <button id="toggleOnButton">Turn on LED</button>
+    <button id="toggleOffButton">Turn off LED</button>
   </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      var turnOn = document.getElementById('turnOn');
+      var toggleOnButton = document.getElementById('toggleOnButton');
+      var toggleOffButton = document.getElementById('toggleOffButton');
 
-      turnOn.addEventListener('click', function () {
+      toggleOnButton.addEventListener('click', function () {
+        sendCommand('/toggle-on');
+        console.log('Clicked turn ON');
+      });
+
+      toggleOffButton.addEventListener('click', function () {
+        sendCommand('/toggle-off');
+        console.log('Clicked turn OFF!');
+      });
+
+      function sendCommand(command) {
         var xhr = new XMLHttpRequest();
-        console.log('Turn On Button Clicked');
 
         xhr.onreadystatechange = function () {
           if (xhr.readyState === 4) {
             if (xhr.status === 200) {
               console.log(xhr.responseText);
             } else {
-              console.error('Toggle failed:', xhr.status, xhr.statusText);
+              console.error('Command failed:', xhr.status, xhr.statusText);
             }
           }
         };
 
-        xhr.open('POST', '/toggle', true);
+        xhr.open('POST', command, true);
         xhr.send();
-      });
-
-      var turnOff = document.getElementById('turnOff');
-
-      turnOff.addEventListener('click', function () {
-        var xhr = new XMLHttpRequest();
-        console.log('Turn Off Button Clicked');
-
-        xhr.onreadystatechange = function () {
-          if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-              console.log(xhr.responseText);
-            } else {
-              console.error('Toggle failed:', xhr.status, xhr.statusText);
-            }
-          }
-        };
-
-        xhr.open('POST', '/toggle', true);
-        xhr.send();
-      });
+      }
     });
   </script>
 
