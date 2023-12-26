@@ -7,6 +7,7 @@ const char* password = SECRET_PASS;
 WiFiServer server(80);
 int ledPin = 13;
 bool ledState = LOW;
+bool ledOn = false;  
 
 void setup() {
   Serial.begin(9600);
@@ -39,19 +40,6 @@ void loop() {
 
     while (client.connected()) {
 
-      // Check if the accumulated line contains "POST /toggle-on"
-      if (currentLine.startsWith("POST /toggle-on")) {
-        // Handle toggle-on request
-        toggleLED();
-        Serial.print("Received ON signal");
-      }
-      if (currentLine.startsWith("POST /toggle-off")) {
-        // Handle toggle-off request
-        digitalWrite(ledPin, LOW);
-        toggleLEDOff();
-        Serial.print("Received OFF signal");
-      }
-
       if (client.available()) {
         char c = client.read();
         Serial.write(c);
@@ -61,16 +49,17 @@ void loop() {
         } else if (c == '\n') {
           headerComplete = false;
 
-          // // Check if the accumulated line contains "POST /toggle-on"
-          // if (currentLine.startsWith("POST /toggle-on")) {
-          //   // Handle toggle-on request
-          //   toggleLED();
-          //   Serial.println("Received ON signal");
-          // } else if (currentLine.startsWith("POST /toggle-off")) {
-          //   // Handle toggle-off request
-          //   digitalWrite(ledPin, LOW);
-          //   Serial.println("Received OFF signal");
-          // }
+          // Check if the accumulated line contains "POST /toggle-on"
+          if (currentLine.startsWith("POST /toggle-on")) {
+            // Handle toggle-on request
+            toggleLED();
+            Serial.println("Received ON signal");
+          } else if (currentLine.startsWith("POST /toggle-off")) {
+            // Handle toggle-off request
+            analogWrite(ledPin, 0);
+            toggleLEDOff();
+            Serial.println("Received OFF signal");
+          }
 
           // Reset the current line
           currentLine = "";
@@ -119,10 +108,11 @@ void toggleLED() {
   }
 }
 
-void toggleLEDOff() {
-  while (true) {
-    digitalWrite(ledPin, LOW);
-  }
 
-  Serial.print("Received OFF signal");
+void toggleLEDOff() {
+  digitalWrite(ledPin, LOW);
+  ledOn = false;  // Set the flag to indicate that the LED is off
+  delay(500);     // Adjust the delay as needed
+  Serial.println("Received OFF signal");
 }
+
